@@ -164,11 +164,11 @@ body{
 /* ===== التخطيط مع الشريط الجانبي ===== */
 .layout{
   display:grid; grid-template-columns:minmax(0,1fr);
-  max-width:920px; margin:0 auto; padding:22px 20px 30px;
-  gap:0 26px; align-items:start;
+  max-width:920px; margin:0 auto; padding:16px 20px 26px;
+  gap:0 24px; align-items:start;
 }
 @media (min-width:1001px){
-  body.sb-open .layout{max-width:1280px; grid-template-columns:300px minmax(0,1fr);}
+  body.sb-open .layout{max-width:1240px; grid-template-columns:262px minmax(0,1fr);}
   body.sb-open .sidebar{display:flex;}
   body:not(.sb-open) .sidebar{display:none;}
   .sidebar{
@@ -180,13 +180,13 @@ body{
 /* ===== الشريط الجانبي ===== */
 .sidebar{
   display:none;
-  flex-direction:column; gap:18px;
+  flex-direction:column; gap:12px;
   background:var(--card);
   border:1px solid var(--border);
-  border-radius:16px;
-  padding:18px 16px;
+  border-radius:14px;
+  padding:14px 12px;
   box-shadow:var(--shadow);
-  font-size:.92rem;
+  font-size:.9rem;
 }
 .sb-head{
   display:flex; align-items:center; justify-content:space-between;
@@ -200,19 +200,17 @@ body{
 }
 .sb-close svg{width:14px; height:14px; stroke:currentColor; stroke-width:2; stroke-linecap:round;}
 .sb-section h4{
-  font-size:.8rem; color:var(--muted); font-weight:700;
-  letter-spacing:.3px; margin-bottom:8px;
-  display:flex; align-items:center; gap:6px;
+  font-size:.75rem; color:var(--muted); font-weight:700;
+  margin-bottom:4px;
 }
-.sb-section h4::after{content:""; flex:1; height:1px; background:var(--border);}
 .sb-list{list-style:none;}
-.sb-list li{margin-bottom:2px;}
+.sb-list li{margin-bottom:0;}
 .sb-link{
-  display:flex; align-items:center; gap:8px;
+  display:flex; align-items:center; gap:7px;
   width:100%; text-align:start;
   background:none; border:none; cursor:pointer;
-  font-family:inherit; font-size:.92rem; color:var(--ink);
-  padding:5px 8px; border-radius:8px;
+  font-family:inherit; font-size:.88rem; color:var(--ink);
+  padding:4px 8px; border-radius:8px;
   transition:background .15s, color .15s;
 }
 .sb-link:hover{background:var(--bg-soft);}
@@ -223,7 +221,7 @@ body{
 }
 .sb-entry-title{
   display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical;
-  overflow:hidden; line-height:1.6; font-size:.88rem;
+  overflow:hidden; line-height:1.55; font-size:.84rem;
 }
 .sb-entry-num{
   flex:none; width:22px; height:22px;
@@ -231,8 +229,10 @@ body{
   border:1px solid var(--gold); color:var(--gold);
   border-radius:50%; font-size:.72rem;
 }
+#tagCloud{gap:5px;}
+#tagCloud .chip{font-size:.72rem; padding:1px 9px;}
 .sb-clear{
-  margin-top:4px; width:100%;
+  margin-top:6px; width:100%;
   background:var(--bg-soft); border:1px dashed var(--border);
   color:var(--muted); font-family:inherit; font-size:.85rem;
   border-radius:8px; padding:6px; cursor:pointer;
@@ -278,7 +278,7 @@ body{
   font-size:1rem; line-height:1; padding:0; font-family:inherit;
 }
 .count-line{
-  text-align:center; color:var(--muted); font-size:.9rem; margin:0 0 18px;
+  text-align:center; color:var(--muted); font-size:.88rem; margin:0 0 12px;
 }
 .no-results{
   display:none; text-align:center; color:var(--muted);
@@ -546,7 +546,6 @@ mark.concept{
 
 <!-- بيانات التدوينات — يُحقن هذا القسم تلقائياً من data/entries.json عبر build.py -->
 <script type="application/json" id="ilham-data">
-<!--ILHAM_DATA_START-->
 [
   {
     "id": "t1",
@@ -695,7 +694,6 @@ mark.concept{
     ]
   }
 ]
-<!--ILHAM_DATA_END-->
 </script>
 
 <script>
