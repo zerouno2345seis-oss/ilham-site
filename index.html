@@ -475,19 +475,19 @@ body.searching button.icon-btn.search-close{display:inline-flex;}
 }
 .entry-body p{margin-bottom:13px; text-align:justify;}
 
-/* الصورة المصغرة للمقطع — تطفو أعلى يسار والنص يلتف حولها */
+/* الصورة المصغرة: طافية داخل كتلة المتن نفسها — النص يلتف حولها */
 .entry-thumb{
   float:left; /* في RTL: يسار الشاشة */
-  width:132px; height:74px;
-  margin:4px 16px 8px 0; /* مسافة يمين الصورة نحو النص */
-  border-radius:10px;
+  width:126px; height:71px;
+  margin:2px 14px 6px 2px;
+  border-radius:9px;
   border:1px solid var(--border);
   box-shadow:0 3px 10px rgba(0,0,0,.12);
   object-fit:cover;
   display:block;
 }
 @media (max-width:640px){
-  .entry-thumb{width:104px; height:58px; margin:3px 12px 6px 0;}
+  .entry-thumb{width:92px; height:52px; margin:2px 10px 4px 2px; border-radius:7px;}
 }
 
 /* زر إظهار كل الوسوم */
@@ -1045,8 +1045,10 @@ mark.concept{
       var shortUrl = (e.source||'').replace(/^https?:\/\//,'');
 
       var thumbHtml = e.thumb
+        ? '<img class="entry-thumb-standalone" src="'+esc(e.thumb)+'" alt="صورة المقطع" loading="lazy">'
+        : '';
+      var thumbInline = e.thumb
         ? '<img class="entry-thumb" src="'+esc(e.thumb)+'" alt="صورة المقطع" loading="lazy">'
-          + '<img class="entry-thumb-standalone" src="'+esc(e.thumb)+'" alt="صورة المقطع" loading="lazy">'
         : '';
 
       /* العنوان: فصل عند « — » إلى سطرين على الجوال */
@@ -1071,9 +1073,8 @@ mark.concept{
           '</div>'+
         '</div>'+
         '<h2 class="entry-title">'+titleHtml+'</h2>'+
-        thumbHtml +
         '<div class="entry-content">'+
-          '<div class="entry-body">'+ (e.body||[]).map(function(p, pi){ return '<p'+(pi===0?' class="has-thumb"':'')+'>'+rich(p)+'</p>'; }).join('') +'</div>'+
+          '<div class="entry-body">'+ thumbInline + (e.body||[]).map(function(p, pi){ return '<p'+(pi===0?' class="has-thumb"':'')+'>'+rich(p)+'</p>'; }).join('') +'</div>'+
           boxes + meta +
           '<div class="entry-source"><span>المصدر:</span>'+
             '<a href="'+esc(e.source||'#')+'" target="_blank" rel="noopener">'+ICONS.link+esc(shortUrl)+'</a>'+
