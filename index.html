@@ -5,7 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>إلهام — سجلّ التدوينات</title>
 <meta name="description" content="سجلّ «إلهام»: تدوينات مختارة من مقاطع دعوية وعلمية — خلاصات، فوائد، وقصص تُلهِم.">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%231F4E79'/%3E%3Ctext x='32' y='45' font-size='34' text-anchor='middle' fill='%23E8C96A'%3Eإ%3C/text%3E%3C/svg%3E">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#1F4E79">
+<link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="icon" href="assets/icons/icon-192.png">
 <script>
 (function(){
   try{
@@ -138,6 +143,30 @@ body{
 :root[data-theme="light"] .icon-sun{display:none;}
 :root[data-theme="light"] .icon-moon{display:block;}
 
+/* زر تثبيت التطبيق — أسفل الشريط الجانبي */
+.sb-install{
+  margin-top:auto; /* يدفع للأسفل دائماً */
+  padding-top:10px;
+  border-top:1px solid var(--border);
+  display:flex; justify-content:center;
+}
+.install-btn{
+  display:inline-flex; align-items:center; justify-content:center;
+  width:46px; height:46px; /* أيقونة فقط */
+  border-radius:50%;
+  background:linear-gradient(150deg, var(--navy-deep), var(--navy));
+  border:1.5px solid var(--gold);
+  color:var(--gold-soft); cursor:pointer;
+  box-shadow:0 4px 12px rgba(31,78,121,.25);
+  transition:transform .15s, box-shadow .2s;
+}
+.install-btn:hover{transform:translateY(-2px); box-shadow:0 6px 16px rgba(31,78,121,.35);}
+.install-btn svg{width:22px; height:22px; stroke:currentColor; fill:none; stroke-width:2; stroke-linecap:round; stroke-linejoin:round;}
+.install-btn span{position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0);} /* نص مخفي للقارئات */
+.install-hint{
+  font-size:.78rem; color:var(--muted); text-align:center;
+}
+
 /* ===== الترويسة المختصرة — سطران ===== */
 .hero{
   background:linear-gradient(160deg, var(--navy-deep) 0%, var(--navy) 100%);
@@ -251,7 +280,7 @@ body{
 @media (max-width:1000px){
   .sidebar{
     position:fixed; top:0; bottom:0; right:0;
-    width:min(300px,82vw); z-index:90;
+    width:min(252px,74vw); z-index:90;
     border-radius:0; border:none; border-inline-start:1px solid var(--border);
     display:none; overflow-y:auto;
   }
@@ -561,6 +590,15 @@ mark.concept{
       <h4>التدوينات</h4>
       <ul class="sb-list" id="entryList"></ul>
       <button class="sb-clear" id="sbClear">إلغاء كل عوامل التصفية</button>
+    </div>
+
+    <!-- زر تثبيت التطبيق PWA — أسفل الشريط الجانبي -->
+    <div class="sb-install">
+      <button class="install-btn" id="installBtn" title="تثبيت التطبيق على جهازك" hidden>
+        <svg viewBox="0 0 24 24"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg>
+        <span>تثبيت التطبيق</span>
+      </button>
+      <div class="install-hint" id="installHint" hidden>التطبيق مثبّت ✓</div>
     </div>
   </aside>
 
@@ -1044,6 +1082,54 @@ mark.concept{
   renderEntries();
   buildSidebar();
   applyFilters();
+
+  /* ===== PWA: التسجيل وزر التثبيت ===== */
+  var deferredPrompt = null;
+  var installBtn = document.getElementById('installBtn');
+  var installHint = document.getElementById('installHint');
+
+  if('serviceWorker' in navigator){
+    navigator.serviceWorker.register('sw.js').catch(function(){});
+  }
+
+  window.addEventListener('beforeinstallprompt', function(e){
+    e.preventDefault();
+    deferredPrompt = e;
+    var installed = false;
+    try{ installed = localStorage.getItem('ilham-installed') === '1'; }catch(err){}
+    if(!installed){ installBtn.hidden = false; installHint.hidden = true; }
+  });
+
+  installBtn.addEventListener('click', function(){
+    if(!deferredPrompt) return;
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.then(function(choice){
+      if(choice && choice.outcome === 'accepted'){
+        installBtn.hidden = true;
+        installHint.hidden = false;
+        try{ localStorage.setItem('ilham-installed','1'); }catch(e){}
+      }
+      deferredPrompt = null;
+    });
+  });
+
+  window.addEventListener('appinstalled', function(){
+    installBtn.hidden = true;
+    installHint.hidden = false;
+    try{ localStorage.setItem('ilham-installed','1'); }catch(e){}
+  });
+
+  /* iOS Safari: لا يوجد beforeinstallprompt — نخفي الزر ونترك التثبيت من قائمة المشاركة */
+  var isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+  if(isIOS){
+    installBtn.hidden = true;
+    var standalone = window.navigator.standalone === true;
+    if(!standalone){
+      installHint.hidden = false;
+      installHint.textContent = 'للتثبيت على الآيفون: زر المشاركة ثم «إضافة إلى الشاشة الرئيسية»';
+      installHint.style.fontSize = '.7rem';
+    }
+  }
 })();
 </script>
 </body>
