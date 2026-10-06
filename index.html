@@ -78,6 +78,7 @@
 
 *{margin:0;padding:0;box-sizing:border-box;}
 html{scroll-behavior:smooth;}
+html,body{overflow-x:clip;}
 body{
   font-family:'Amiri','Geeza Pro','Noto Naskh Arabic','Traditional Arabic',serif;
   background:var(--bg);
@@ -249,7 +250,7 @@ body{
 @media (max-width:1000px){
   .sidebar{
     position:fixed; top:0; bottom:0; right:0;
-    width:min(330px,86vw); z-index:90;
+    width:min(300px,82vw); z-index:90;
     border-radius:0; border:none; border-inline-start:1px solid var(--border);
     transform:translateX(105%); transition:transform .28s ease;
     overflow-y:auto;
@@ -451,12 +452,20 @@ mark.concept{
 
 @media (max-width:640px){
   body{font-size:16.5px;}
-  .entry{padding:20px 16px 16px; border-radius:14px;}
-  .entry-title{font-size:1.25rem;}
+  .nav-inner{padding:8px 12px; gap:8px;}
+  .brand-name{font-size:1.35rem;}
+  #search{width:clamp(84px, 24vw, 150px); padding:7px 30px 7px 12px;}
+  .search-wrap svg{inset-inline-start:8px;}
+  .layout{padding:14px 14px 22px;}
+  .entry{padding:18px 14px 14px; border-radius:14px;}
+  .entry-title{font-size:1.22rem;}
   .brand-tag{display:none;}
-  #search{width:140px;}
+  .hero{padding:13px 14px 15px;}
   .hero-title{font-size:1.7rem;}
   .hero-tag{font-size:.85rem;}
+  .hero-line2{font-size:.8rem;}
+  .entry-date{font-size:.72rem; padding:2px 10px;}
+  .entry-speaker{font-size:.8rem; padding:2px 11px;}
 }
 </style>
 </head>
