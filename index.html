@@ -451,7 +451,22 @@ body.searching button.icon-btn.search-close{display:inline-flex;}
   margin-bottom:12px;
 }
 .entry-content{overflow:hidden;}
+/* عند الطي: الصورة المصغرة تبقى ظاهرة أعلى البطاقة */
 .entry.collapsed .entry-content{display:none;}
+.entry.collapsed .entry-head{margin-bottom:0;}
+.entry-thumb-standalone{display:none;}
+.entry.collapsed .entry-thumb-standalone{
+  display:block;
+  width:132px; height:74px;
+  margin:10px 2px 4px;
+  border-radius:10px;
+  border:1px solid var(--border);
+  box-shadow:0 3px 10px rgba(0,0,0,.12);
+  object-fit:cover;
+}
+@media (max-width:640px){
+  .entry.collapsed .entry-thumb-standalone{width:104px; height:58px;}
+}
 .entry-body p{margin-bottom:13px; text-align:justify;}
 
 /* الصورة المصغرة للمقطع — تطفو أعلى يسار والنص يلتف حولها */
@@ -1014,6 +1029,7 @@ mark.concept{
 
       var thumbHtml = e.thumb
         ? '<img class="entry-thumb" src="'+esc(e.thumb)+'" alt="صورة المقطع" loading="lazy">'
+          + '<img class="entry-thumb-standalone" src="'+esc(e.thumb)+'" alt="صورة المقطع" loading="lazy">'
         : '';
 
       art.innerHTML =
@@ -1028,8 +1044,9 @@ mark.concept{
           '</div>'+
         '</div>'+
         '<h2 class="entry-title">'+esc(e.title||'')+'</h2>'+
+        thumbHtml +
         '<div class="entry-content">'+
-          '<div class="entry-body">'+ thumbHtml + (e.body||[]).map(function(p, pi){ return '<p'+(pi===0?' class="has-thumb"':'')+'>'+rich(p)+'</p>'; }).join('') +'</div>'+
+          '<div class="entry-body">'+ (e.body||[]).map(function(p, pi){ return '<p'+(pi===0?' class="has-thumb"':'')+'>'+rich(p)+'</p>'; }).join('') +'</div>'+
           boxes + meta +
           '<div class="entry-source"><span>المصدر:</span>'+
             '<a href="'+esc(e.source||'#')+'" target="_blank" rel="noopener">'+ICONS.link+esc(shortUrl)+'</a>'+
@@ -1338,6 +1355,17 @@ mark.concept{
   });
   fontBtn.addEventListener('contextmenu', function(ev){ ev.preventDefault(); openFontMenu(); });
 
+  /* ===== تنبيه عائم (معرّف أولاً — يستخدمه الباقي) ===== */
+  var toastEl = document.getElementById('toast');
+  var toastTimer = null;
+  function toast(msg){
+    if(!toastEl) return;
+    toastEl.textContent = msg;
+    toastEl.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function(){ toastEl.classList.remove('show'); }, 1800);
+  }
+
   /* ===== حجم خط التدوينات ===== */
   var SIZES = [15, 16.5, 17.5, 19, 21, 23];
   var curSize = 2;
@@ -1354,16 +1382,6 @@ mark.concept{
   }
   applySize(curSize);
   sizeBtn.addEventListener('click', function(){ applySize(curSize + 1); });
-
-  /* ===== تنبيه عائم ===== */
-  var toastEl = document.getElementById('toast');
-  var toastTimer = null;
-  function toast(msg){
-    toastEl.textContent = msg;
-    toastEl.classList.add('show');
-    clearTimeout(toastTimer);
-    toastTimer = setTimeout(function(){ toastEl.classList.remove('show'); }, 1800);
-  }
 
   /* ===== PWA: التسجيل وزر التثبيت ===== */
   var deferredPrompt = null;
