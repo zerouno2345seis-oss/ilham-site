@@ -499,9 +499,7 @@ body.searching button.icon-btn.search-close{display:inline-flex;}
   transition:all .15s;
 }
 .tags-more:hover{border-color:var(--gold); color:var(--ink);}
-/* الوسوم المطوية: أخف ما بعد الرابع */
-.entry-meta.collapsed-tags .chip:nth-child(n+5){display:none;}
-.entry-meta.collapsed-tags .tags-more::after{content:" …";}
+/* لم نعد نخفي وسوم البطاقة — الصف الواحد مع التمرير يعرضها كلها */
 
 .quran{color:var(--green); font-weight:700;}
 .quote{color:var(--blue); font-weight:700;}
@@ -529,9 +527,23 @@ mark.concept{
 
 /* الفئات والوسوم */
 .entry-meta{
-  display:flex; align-items:center; gap:8px; flex-wrap:wrap;
+  display:flex; align-items:center; gap:8px;
+  flex-wrap:nowrap;          /* صف واحد إجباري */
+  overflow-x:auto;           /* شريط تمرير أفقي */
+  overflow-y:hidden;
+  -webkit-overflow-scrolling:touch;
+  scrollbar-width:thin;
+  scrollbar-color:color-mix(in srgb, var(--muted) 45%, transparent) transparent;
   margin-top:14px;
+  padding-bottom:4px;
 }
+.entry-meta::-webkit-scrollbar{height:5px;}
+.entry-meta::-webkit-scrollbar-track{background:transparent;}
+.entry-meta::-webkit-scrollbar-thumb{
+  background:color-mix(in srgb, var(--muted) 45%, transparent);
+  border-radius:999px;
+}
+.entry-meta .chip{flex:none; white-space:nowrap;}
 .chip{
   font-family:inherit; cursor:pointer;
   font-size:.78rem; border-radius:999px; padding:2px 12px;
@@ -1020,7 +1032,7 @@ mark.concept{
         return '<div class="box box-'+b.type+'"><span class="box-label">'+esc(b.label)+'</span><p>'+rich(b.text)+'</p></div>';
       }).join('');
 
-      var meta = '<div class="entry-meta collapsed-tags">';
+      var meta = '<div class="entry-meta">';
       if(e.category){
         meta += '<button class="chip chip-cat" data-cat="'+esc(e.category)+'" title="تصفية حسب التصنيف">'+esc(e.category)+'</button>';
       }
@@ -1028,7 +1040,6 @@ mark.concept{
         var isSpeaker = (t === e.speaker);
         meta += '<button class="chip'+(isSpeaker?' chip-speaker':'')+'" data-tag="'+esc(t)+'" title="'+(isSpeaker?'تصفية حسب القائل':'تصفية حسب الوسم')+'">'+esc(t)+'</button>';
       });
-      meta += '<button class="tags-more" data-more>المزيد</button>';
       meta += '</div>';
 
       var shortUrl = (e.source||'').replace(/^https?:\/\//,'');
@@ -1082,15 +1093,8 @@ mark.concept{
       });
     });
 
-    /* فرد الوسوم داخل البطاقة */
+    /* تصفية من شرائح البطاقة نفسها (الوسوم الآن صف واحد بتمرير أفقي — بلا زر المزيد) */
     feed.addEventListener('click', function(ev){
-      var more = ev.target.closest('.tags-more[data-more]');
-      if(more){
-        var m = more.closest('.entry-meta');
-        m.classList.remove('collapsed-tags');
-        more.remove();
-        return;
-      }
       var c = ev.target.closest('.chip');
       if(!c) return;
       if(c.dataset.cat){ setFilter(c.dataset.cat, null); }
