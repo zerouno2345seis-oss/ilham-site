@@ -460,18 +460,21 @@ body.searching button.icon-btn.search-close{display:inline-flex;}
 /* عند الطي: الصورة المصغرة تبقى ظاهرة أعلى البطاقة */
 .entry.collapsed .entry-content{display:none;}
 .entry.collapsed .entry-head{margin-bottom:0;}
-.entry-thumb-standalone{display:none;}
-.entry.collapsed .entry-thumb-standalone{
-  display:block;
-  width:132px; height:74px;
-  margin:10px 2px 4px;
-  border-radius:10px;
+/* عند الطي: الصورة تطفو يساراً والعنوان يلتف حولها — لا صف مستقل */
+.entry-thumb-standalone{
+  display:none;
+  float:left;
+  width:126px; height:71px;
+  margin:2px 14px 6px 2px;
+  border-radius:9px;
   border:1px solid var(--border);
   box-shadow:0 3px 10px rgba(0,0,0,.12);
   object-fit:cover;
 }
+.entry.collapsed{overflow:hidden;} /* احتواء الطافية داخل البطاقة */
+.entry.collapsed .entry-thumb-standalone{display:block;}
 @media (max-width:640px){
-  .entry.collapsed .entry-thumb-standalone{width:104px; height:58px;}
+  .entry.collapsed .entry-thumb-standalone{width:92px; height:52px; margin:2px 10px 4px 2px; border-radius:7px;}
 }
 .entry-body p{margin-bottom:13px; text-align:justify;}
 
@@ -1072,6 +1075,7 @@ mark.concept{
             '<button class="collapse-btn" aria-expanded="true" aria-label="طي أو توسيع التدوينة">'+ICONS.chev+'</button>'+
           '</div>'+
         '</div>'+
+        thumbHtml +
         '<h2 class="entry-title">'+titleHtml+'</h2>'+
         '<div class="entry-content">'+
           '<div class="entry-body">'+ thumbInline + (e.body||[]).map(function(p, pi){ return '<p'+(pi===0?' class="has-thumb"':'')+'>'+rich(p)+'</p>'; }).join('') +'</div>'+
