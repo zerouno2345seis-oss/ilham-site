@@ -32,6 +32,36 @@
   src:url('assets/fonts/ArefRuqaa-Regular.ttf') format('truetype');
   font-weight:400; font-style:normal; font-display:swap;
 }
+@font-face{
+  font-family:'Noto Naskh Arabic';
+  src:url('assets/fonts/NotoNaskhArabic-Regular.ttf') format('truetype');
+  font-weight:400; font-style:normal; font-display:swap;
+}
+@font-face{
+  font-family:'Lemonada';
+  src:url('assets/fonts/Lemonada.ttf') format('truetype');
+  font-weight:400; font-style:normal; font-display:swap;
+}
+@font-face{
+  font-family:'Cairo';
+  src:url('assets/fonts/Cairo.ttf') format('truetype');
+  font-weight:400; font-style:normal; font-display:swap;
+}
+@font-face{
+  font-family:'Mirza';
+  src:url('assets/fonts/Mirza.ttf') format('truetype');
+  font-weight:400; font-style:normal; font-display:swap;
+}
+@font-face{
+  font-family:'Scheherazade New';
+  src:url('assets/fonts/ScheherazadeNew.ttf') format('truetype');
+  font-weight:400; font-style:normal; font-display:swap;
+}
+@font-face{
+  font-family:'Reem Kufi';
+  src:url('assets/fonts/ReemKufi.ttf') format('truetype');
+  font-weight:400; font-style:normal; font-display:swap;
+}
 
 /* ===== متغيرات النمط الفاتح ===== */
 :root{
@@ -85,7 +115,7 @@
 html{scroll-behavior:smooth;}
 html,body{overflow-x:clip;}
 body{
-  font-family:'Amiri','Geeza Pro','Noto Naskh Arabic','Traditional Arabic',serif;
+  font-family:var(--app-font);
   background:var(--bg);
   color:var(--ink);
   font-size:17.5px;
@@ -114,7 +144,13 @@ body{
 }
 .brand{display:flex; align-items:baseline; gap:10px; text-decoration:none;}
 .brand-name{font-family:'Aref Ruqaa',serif; font-size:1.6rem; color:var(--navy); line-height:1;}
-.brand-tag{font-size:.78rem; color:var(--muted);}
+.brand-count{
+  font-size:.72rem; color:var(--muted);
+  background:var(--bg-soft); border:1px solid var(--border);
+  border-radius:999px; padding:0 10px; line-height:1.7;
+  white-space:nowrap;
+}
+.brand-tag{display:none;}
 .nav-spacer{flex:1;}
 .search-wrap{position:relative;}
 .search-wrap svg{
@@ -126,9 +162,60 @@ body{
   background:var(--card); border:1px solid var(--border);
   border-radius:999px; padding:7px 34px 7px 14px;
   width:220px; max-width:38vw; outline:none;
-  transition:border-color .2s, box-shadow .2s;
+  transition:border-color .2s, box-shadow .2s, width .25s ease;
 }
 #search:focus{border-color:var(--gold); box-shadow:0 0 0 3px rgba(201,162,39,.15);}
+
+/* وضع البحث: الشريط كله يصير بحثاً */
+.search-btn{display:inline-flex;}
+.search-wrap{display:none;}
+body.searching .search-wrap{display:block; flex:1;}
+body.searching .search-btn,
+body.searching .only-idle{display:none!important;}
+body.searching #search{width:100%; max-width:none; font-size:1.05rem; padding:9px 40px 9px 16px;}
+/* زر إلغاء البحث — مخفي إلا في وضع البحث (خصوصية أعلى من .icon-btn) */
+button.icon-btn.search-close{display:none;}
+body.searching button.icon-btn.search-close{display:inline-flex;}
+
+/* قائمة الخطوط المنبثقة */
+#fontMenu{
+  position:fixed; z-index:95;
+  background:var(--card); border:1px solid var(--border);
+  border-radius:14px; box-shadow:0 14px 40px rgba(0,0,0,.22);
+  padding:6px; min-width:230px; max-height:60vh; overflow-y:auto;
+  display:none;
+}
+#fontMenu.open{display:block;}
+#fontMenu button{
+  display:flex; align-items:center; justify-content:space-between; gap:10px;
+  width:100%; text-align:start;
+  background:none; border:none; cursor:pointer;
+  font-family:inherit; font-size:1.02rem; color:var(--ink);
+  padding:8px 12px; border-radius:9px;
+}
+#fontMenu button:hover{background:var(--bg-soft);}
+#fontMenu button.active{background:color-mix(in srgb, var(--gold) 16%, transparent); font-weight:700;}
+#fontMenu button .f-en{font-size:.72rem; color:var(--muted);}
+
+/* تنبيه عائم */
+#toast{
+  position:fixed; bottom:78px; left:50%; transform:translateX(-50%) translateY(8px);
+  background:var(--navy-deep); color:var(--hero-ink);
+  border:1px solid var(--gold);
+  border-radius:999px; padding:6px 18px;
+  font-size:.88rem; z-index:96;
+  opacity:0; pointer-events:none; transition:opacity .2s, transform .2s;
+  white-space:nowrap;
+}
+#toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
+
+/* متغيرات الخط: تُطبّق من JS */
+:root{--app-font:'Amiri','Geeza Pro','Noto Naskh Arabic','Traditional Arabic',serif; --entry-fs:17.5px;}
+
+/* زر طي/توسيع الكل — أيقونة متغيرة */
+.icon-btn .ic-collapse, .icon-btn .ic-expand{display:none;}
+.icon-btn.state-expanded .ic-collapse{display:block;}
+.icon-btn.state-collapsed .ic-expand{display:block;}
 .icon-btn{
   display:inline-flex; align-items:center; justify-content:center;
   width:38px; height:38px; border-radius:50%;
@@ -167,29 +254,7 @@ body{
   font-size:.78rem; color:var(--muted); text-align:center;
 }
 
-/* ===== الترويسة المختصرة — سطران ===== */
-.hero{
-  background:linear-gradient(160deg, var(--navy-deep) 0%, var(--navy) 100%);
-  color:var(--hero-ink);
-  padding:16px 20px 18px;
-  text-align:center;
-}
-.hero-line1{
-  display:flex; align-items:baseline; justify-content:center; flex-wrap:wrap; gap:12px;
-}
-.hero-title{
-  font-family:'Aref Ruqaa',serif;
-  font-size:2.1rem; color:var(--gold-soft); line-height:1.3;
-  text-shadow:0 2px 12px rgba(0,0,0,.25);
-}
-.hero-tag{font-size:.95rem; opacity:.9;}
-.hero-badge{
-  font-size:.75rem; border:1px solid rgba(232,201,106,.5); color:var(--gold-soft);
-  border-radius:999px; padding:1px 12px;
-}
-.hero-line2{
-  font-size:.88rem; opacity:.85; margin-top:2px;
-}
+/* ===== الترويسة — حُذفت، العدّاد انتقل للشريط العلوي ===== */
 
 /* ===== التخطيط مع الشريط الجانبي ===== */
 .layout{
@@ -319,6 +384,7 @@ body{
 
 /* ===== بطاقة التدوينة ===== */
 .entry{
+  font-size:var(--entry-fs); /* حجم خط التدوينات فقط — يتغير من الزر */
   background:var(--card);
   border:1px solid var(--border);
   border-radius:18px;
@@ -380,7 +446,7 @@ body{
 
 .entry-title{
   color:var(--title);
-  font-size:1.45rem; font-weight:700;
+  font-size:1.42em; font-weight:700;
   line-height:1.8;
   margin-bottom:12px;
 }
@@ -427,7 +493,7 @@ mark.concept{
 .box{
   border-radius:12px; padding:12px 16px; margin:14px 0 4px;
   border:1px solid; border-inline-start-width:4px;
-  font-size:.97rem; line-height:1.95;
+  font-size:.96em; line-height:1.95;
 }
 .box-label{
   display:inline-flex; align-items:center; gap:6px;
@@ -497,11 +563,8 @@ mark.concept{
 .footer p{opacity:.85;}
 
 @media print{
-  .nav, .sidebar, .backdrop, #progress, #toTop, .filter-bar, .count-line, .collapse-btn{display:none !important;}
+  .nav, .sidebar, .backdrop, #progress, #toTop, .filter-bar, .count-line, .collapse-btn, #fontMenu, #toast{display:none !important;}
   body{background:#fff; color:#000;}
-  .hero{background:#fff !important; color:#000;}
-  .hero-title{color:#1F4E79; text-shadow:none;}
-  .hero-badge, .hero-tag{color:#555; border-color:#ccc;}
   .layout{max-width:100%; padding:10px 0;}
   .entry{box-shadow:none; border:1px solid #ccc; break-inside:avoid; page-break-inside:avoid;}
   .entry-content{display:block !important;}
@@ -510,14 +573,14 @@ mark.concept{
 
 @media (max-width:640px){
   body{font-size:16.5px;}
-  .nav-inner{padding:8px 12px; gap:8px;}
+  .nav-inner{padding:8px 10px; gap:6px;}
   .brand-name{font-size:1.35rem;}
-  #search{width:clamp(84px, 24vw, 150px); padding:7px 30px 7px 12px;}
-  .search-wrap svg{inset-inline-start:8px;}
+  .brand-count{display:none;}
+  .icon-btn{width:34px; height:34px;}
+  .icon-btn svg{width:17px; height:17px;}
   .layout{padding:14px 14px 22px;}
   .entry{padding:18px 14px 14px; border-radius:14px;}
-  .entry-title{font-size:1.22rem;}
-  .brand-tag{display:none;}
+  .entry-title{font-size:1.22em;}
   .hero{padding:13px 14px 15px;}
   .hero-title{font-size:1.7rem;}
   .hero-tag{font-size:.85rem;}
@@ -538,29 +601,35 @@ mark.concept{
     </button>
     <a class="brand" href="#">
       <span class="brand-name">إلهام</span>
-      <span class="brand-tag">سجلّ التدوينات</span>
+      <span class="brand-count" id="navCount">…</span>
     </a>
     <div class="nav-spacer"></div>
+    <button class="icon-btn search-btn" id="searchBtn" aria-label="فتح البحث" title="بحث">
+      <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+    </button>
     <div class="search-wrap" role="search">
       <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
       <input type="search" id="search" placeholder="ابحث في التدوينات…" aria-label="ابحث في التدوينات">
     </div>
-    <button class="icon-btn" id="themeBtn" aria-label="تبديل النمط الليلي" title="النمط الليلي / النهاري">
+    <button class="icon-btn search-close" id="searchCancel" aria-label="إلغاء البحث" title="إلغاء البحث">
+      <svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
+    <button class="icon-btn nav-actions only-idle" id="collapseAllBtn" aria-label="طي أو توسيع كل التدوينات" title="طي الكل / توسيع الكل">
+      <svg class="ic-collapse" viewBox="0 0 24 24"><path d="M4 9l8-6 8 6"/><path d="M4 15l8 6 8-6"/></svg>
+      <svg class="ic-expand" viewBox="0 0 24 24"><path d="M4 6l8 6 8-6"/><path d="M4 18l8-6 8 6"/></svg>
+    </button>
+    <button class="icon-btn nav-actions only-idle" id="fontBtn" aria-label="تغيير نوع الخط" title="الخط — ضغطة: الخط التالي، ضغطة مطولة: كل الخطوط">
+      <svg viewBox="0 0 24 24"><path d="M5 19l5.5-14h3L19 19"/><path d="M7.5 14h9"/></svg>
+    </button>
+    <button class="icon-btn nav-actions only-idle" id="fontSizeBtn" aria-label="تغيير حجم خط التدوينات" title="حجم خط التدوينات">
+      <svg viewBox="0 0 24 24"><path d="M4 18l4-10h2l4 10"/><path d="M5.2 14.5h7.6"/><path d="M15 18l2.4-6h1.2l2.4 6"/><path d="M16 15.5h4"/></svg>
+    </button>
+    <button class="icon-btn nav-actions only-idle" id="themeBtn" aria-label="تبديل النمط الليلي" title="النمط الليلي / النهاري">
       <svg class="icon-moon" viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8z"/></svg>
       <svg class="icon-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
     </button>
   </div>
 </nav>
-
-<!-- الترويسة المختصرة: سطران -->
-<header class="hero">
-  <div class="hero-line1">
-    <span class="hero-title">إلهام</span>
-    <span class="hero-tag">سجلّ التدوينات</span>
-    <span class="hero-badge" id="heroCount">…</span>
-  </div>
-  <div class="hero-line2">فوائد وخلاصات مختارة من المقاطع الدعوية والعلمية</div>
-</header>
 
 <div class="backdrop" id="backdrop"></div>
 
@@ -609,6 +678,12 @@ mark.concept{
     <div class="no-results" id="noResults">لا توجد تدوينات مطابقة — جرّب كلمة أو تصنيفاً آخر.</div>
   </main>
 </div>
+
+<!-- قائمة الخطوط -->
+<div id="fontMenu" role="menu" aria-label="اختيار الخط"></div>
+
+<!-- تنبيه عائم -->
+<div id="toast" role="status"></div>
 
 <button id="toTop" aria-label="العودة إلى الأعلى" title="العودة إلى الأعلى">
   <svg viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
@@ -1114,11 +1189,146 @@ mark.concept{
   toTop.addEventListener('click', function(){ window.scrollTo({top:0, behavior:'smooth'}); });
 
   /* تشغيل */
-  document.getElementById('heroCount').textContent =
+  document.getElementById('navCount').textContent =
     arNum(DATA.length) + ' تدوينات · ' + arNum(new Set(DATA.map(function(e){return e.category;})).size) + ' فئات';
   renderEntries();
   buildSidebar();
   applyFilters();
+
+  /* ===== طي/توسيع كل التدوينات ===== */
+  var collapseAllBtn = document.getElementById('collapseAllBtn');
+  collapseAllBtn.classList.add('state-expanded');
+  function setAllCollapsed(collapsed){
+    cards.forEach(function(card){
+      card.classList.toggle('collapsed', collapsed);
+      var b = card.querySelector('.collapse-btn');
+      if(b){ b.setAttribute('aria-expanded', collapsed ? 'false' : 'true'); }
+    });
+    collapseAllBtn.classList.toggle('state-expanded', !collapsed);
+    collapseAllBtn.classList.toggle('state-collapsed', collapsed);
+    try{ localStorage.setItem('ilham-all-collapsed', collapsed ? '1' : '0'); }catch(e){}
+  }
+  collapseAllBtn.addEventListener('click', function(){
+    var anyExpanded = cards.some(function(c){ return !c.classList.contains('collapsed'); });
+    setAllCollapsed(anyExpanded);
+  });
+  (function initCollapseAll(){
+    var saved = null;
+    try{ saved = localStorage.getItem('ilham-all-collapsed'); }catch(e){}
+    if(saved === '1'){ setAllCollapsed(true); }
+  })();
+
+  /* ===== وضع البحث ===== */
+  var searchBtn = document.getElementById('searchBtn');
+  var searchCancel = document.getElementById('searchCancel');
+  function enterSearch(){
+    document.body.classList.add('searching');
+    setTimeout(function(){ searchInput.focus(); }, 50);
+  }
+  function exitSearch(){
+    document.body.classList.remove('searching');
+    searchInput.value = '';
+    applyFilters();
+  }
+  searchBtn.addEventListener('click', enterSearch);
+  searchCancel.addEventListener('click', exitSearch);
+  searchInput.addEventListener('keydown', function(ev){
+    if(ev.key === 'Escape'){ exitSearch(); }
+  });
+
+  /* ===== الخطوط ===== */
+  var FONTS = [
+    {name:'أميري', css:"'Amiri','Geeza Pro','Noto Naskh Arabic',serif"},
+    {name:'ليمونادة', css:"'Lemonada','Amiri',serif"},
+    {name:'النسخ (نوتو)', css:"'Noto Naskh Arabic','Amiri',serif"},
+    {name:'القاهرة', css:"'Cairo','Amiri',sans-serif"},
+    {name:'مرزة', css:"'Mirza','Amiri',serif"},
+    {name:'شهرزاد', css:"'Scheherazade New','Amiri',serif"},
+    {name:'ريم كوفي', css:"'Reem Kufi','Amiri',sans-serif"}
+  ];
+  var curFont = 0;
+  try{
+    var savedF = parseInt(localStorage.getItem('ilham-font-idx'), 10);
+    if(savedF >= 0 && savedF < FONTS.length){ curFont = savedF; }
+  }catch(e){}
+  function applyFont(idx){
+    curFont = (idx + FONTS.length) % FONTS.length;
+    document.documentElement.style.setProperty('--app-font', FONTS[curFont].css);
+    try{ localStorage.setItem('ilham-font-idx', String(curFont)); }catch(e){}
+    document.querySelectorAll('#fontMenu button').forEach(function(b, i){
+      b.classList.toggle('active', i === curFont);
+    });
+  }
+  applyFont(curFont);
+
+  var fontBtn = document.getElementById('fontBtn');
+  var fontMenu = document.getElementById('fontMenu');
+  FONTS.forEach(function(f, i){
+    var b = document.createElement('button');
+    b.setAttribute('role','menuitem');
+    b.innerHTML = '<span style="font-family:'+f.css.replace(/'/g,'&#39;')+'">'+f.name+'</span><span class="f-en">'+f.name+'</span>';
+    b.addEventListener('click', function(){ applyFont(i); closeFontMenu(); toast('الخط: ' + f.name); });
+    fontMenu.appendChild(b);
+  });
+  function openFontMenu(){
+    var r = fontBtn.getBoundingClientRect();
+    fontMenu.classList.add('open');
+    var w = fontMenu.offsetWidth;
+    var left = Math.max(8, Math.min(window.innerWidth - w - 8, r.left + r.width/2 - w/2));
+    fontMenu.style.left = left + 'px';
+    fontMenu.style.top = (r.bottom + 8) + 'px';
+  }
+  function closeFontMenu(){ fontMenu.classList.remove('open'); }
+  document.addEventListener('click', function(ev){
+    if(!fontMenu.classList.contains('open')) return;
+    if(fontMenu.contains(ev.target) || fontBtn.contains(ev.target)) return;
+    closeFontMenu();
+  });
+
+  /* ضغطة عادية: الخط التالي — ضغطة مطولة: القائمة */
+  var pressTimer = null, longPressed = false;
+  fontBtn.addEventListener('pointerdown', function(){
+    longPressed = false;
+    pressTimer = setTimeout(function(){
+      longPressed = true;
+      openFontMenu();
+    }, 550);
+  });
+  fontBtn.addEventListener('pointerup', function(){ clearTimeout(pressTimer); });
+  fontBtn.addEventListener('pointerleave', function(){ clearTimeout(pressTimer); });
+  fontBtn.addEventListener('click', function(ev){
+    if(longPressed){ ev.preventDefault(); return; }
+    applyFont(curFont + 1);
+    toast('الخط: ' + FONTS[curFont].name);
+  });
+  fontBtn.addEventListener('contextmenu', function(ev){ ev.preventDefault(); openFontMenu(); });
+
+  /* ===== حجم خط التدوينات ===== */
+  var SIZES = [15, 16.5, 17.5, 19, 21, 23];
+  var curSize = 2;
+  try{
+    var savedS = parseInt(localStorage.getItem('ilham-font-size'), 10);
+    if(savedS >= 0 && savedS < SIZES.length){ curSize = savedS; }
+  }catch(e){}
+  var sizeBtn = document.getElementById('fontSizeBtn');
+  function applySize(idx){
+    curSize = (idx + SIZES.length) % SIZES.length;
+    document.documentElement.style.setProperty('--entry-fs', SIZES[curSize] + 'px');
+    try{ localStorage.setItem('ilham-font-size', String(curSize)); }catch(e){}
+    toast('حجم التدوينات: ' + arNum(SIZES[curSize]));
+  }
+  applySize(curSize);
+  sizeBtn.addEventListener('click', function(){ applySize(curSize + 1); });
+
+  /* ===== تنبيه عائم ===== */
+  var toastEl = document.getElementById('toast');
+  var toastTimer = null;
+  function toast(msg){
+    toastEl.textContent = msg;
+    toastEl.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function(){ toastEl.classList.remove('show'); }, 1800);
+  }
 
   /* ===== PWA: التسجيل وزر التثبيت ===== */
   var deferredPrompt = null;
